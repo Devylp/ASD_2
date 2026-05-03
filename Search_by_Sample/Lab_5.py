@@ -25,6 +25,8 @@ def z_function(text):
       start, end = i, i+pref[i]
   return pref
 
+
+
 def get_suffix_table(text):
   return z_function(text[::-1])[::-1]
 
@@ -57,6 +59,8 @@ def get_bed_char(text):
     for i,ch in enumerate(text[:-1]):
         bed_char[ch] = i
     return bed_char
+
+
 
 def search_boyer_moore(text, pat):
     good_suffics_table = get_good_suffix(pat)

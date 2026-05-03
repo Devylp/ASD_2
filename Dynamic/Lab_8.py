@@ -1,23 +1,44 @@
-coins = [1, 2, 5, 10] # Номиналы монет
-result_coins = []
-amount = int(input("Введите сумму сдачи: "))
+def get_all_combinations(amount, coins=[1, 2, 5, 10]):
+    """
+    Возвращает список всех уникальных комбинаций монет,
+    дающих в сумме amount (порядок монет не важен).
+    Каждая комбинация — список монет (например, [5, 2, 2, 1]).
+    """
 
-map = [10_000_000]*(amount + 1)
-map[0] = 0
+    coins = sorted(coins, reverse=True)
+    result = []
 
-for i in range(1, amount + 1):
-    for coin in coins:
+    def backtrack(remaining, index, current_combination):
+        if remaining == 0:
+            result.append(current_combination[:])  #нашли комбинацию
+            return
+        if index == len(coins):
+            return  # монеты кончились
 
-        if i - coin >= 0:
-            res = map[i - coin] + 1
+        # Пробуем взять 0, 1, 2,... монет текущего номинала
+        coin = coins[index]
+        max_count = remaining // coin
+        for count in range(max_count + 1):
+            # добавляем count монет в комбинацию
+            for _ in range(count):
+                current_combination.append(coin)
+            # рекурсивно заполняем оставшуюся сумму следующими (меньшими) монетами
+            backtrack(remaining - coin * count, index + 1, current_combination)
+            # откатываем добавленные монеты
+            for _ in range(count):
+                current_combination.pop()
 
-            if res < map[i]:
-                map[i] = res
-                result_coins.append(coin)
+    backtrack(amount, 0, [])
+    return result
 
-result = map[amount]
 
-if result == 10_000_000:
-    print(f"Для клиента размен сдачи: {amount}\nНевозможен")
+if __name__ == "__main__":
+    # Демонстрация на небольшой сумме
+    test_amount = 17
+    combinations = get_all_combinations(test_amount)
 
-print(f"Клиенту необходимо выдать сдачу в размере: {amount}\nколичеством монет: {result}") # \nМонетами номиналом: {result_coins}
+    print(f"Сумма: {test_amount}")
+    print(f"Всего способов: {len(combinations)}")
+    print("Примеры комбинаций:")
+    for combo in combinations:
+        print(combo)
